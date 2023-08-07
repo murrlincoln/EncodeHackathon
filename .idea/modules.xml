@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/EncodeHackathon.iml" filepath="$PROJECT_DIR$/.idea/EncodeHackathon.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/encodehackathon.iml" filepath="$PROJECT_DIR$/.idea/encodehackathon.iml" />
     </modules>
   </component>
 </project>
