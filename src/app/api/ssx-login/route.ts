@@ -1,15 +1,24 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import ssx from "../_ssx/route";
+import ssx from "../_ssx";
+import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers'
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  res.status(200).json(
+export async function POST(request: Request) {
+  const body = await request.json();
+
+  const cookieStore = cookies();
+  const nonce = cookieStore.get('nonce');
+
+  return NextResponse.json(
     await ssx.login(
-      req.body.siwe,
-      req.body.signature,
-      req.body.daoLogin,
-      req.body.resolveEns,
-      req.cookies.nonce || "",
-      req.body.resolveLens,
-    )
+      body.siwe,
+      body.signature,
+      body.daoLogin,
+      body.resolveEns,
+      nonce?.value ?? "",
+      body.resolveLens,
+    ),
+    {
+      status: 200
+    }
   );
 }

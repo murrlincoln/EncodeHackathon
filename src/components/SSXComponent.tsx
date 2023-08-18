@@ -4,9 +4,12 @@ import { useState } from "react";
 
 const SSXComponent = () => {
 
+	console.log('SSXComponent');
+
     const [ssxProvider, setSSX] = useState<SSX | null>(null);
 
     const ssxHandler = async () => {
+		console.log('ssxHandler');
         const ssx = new SSX({
             providers: {
                 server: {
@@ -14,7 +17,9 @@ const SSXComponent = () => {
                 }
             },
         });
+		console.log('ssx', ssx);
         await ssx.signIn();
+		console.log('ssx after sign in', ssx);
         setSSX(ssx);
     };
 

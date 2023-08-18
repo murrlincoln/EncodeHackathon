@@ -1,8 +1,9 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import ssx from "../_ssx/route";
+import ssx from "../_ssx";
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
+export async function GET(request: Request) {
   const nonce = ssx.generateNonce();
-  req.cookies.nonce = nonce;
-  res.status(200).send(nonce);
+  return new Response(nonce, {
+    status: 200,
+    headers: { 'Set-Cookie': `nonce=${nonce}` }
+  });
 }
