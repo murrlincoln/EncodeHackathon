@@ -1,19 +1,26 @@
 import SSXComponent from '@/components/SSXComponent';
-import type { NextPage } from 'next'
-import Head from 'next/head'
 
-
-const Home: NextPage = () => {
-
+export default function Home() {
   return (
-    <>
-      <Head>
-        <title>SSX Next Dapp</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <SSXComponent />
-    </>
+    <div className='App'>
+      <div className='Header'>
+        <span className='Header-span'>
+          SSX
+        </span>
+      </div>
+      <div className='Title'>
+        <h1 className='Title-h1'>
+          SSX Test App
+        </h1>
+        <h2 className='Title-h2'>
+          Connect and sign in with your Ethereum account
+        </h2>
+      </div>
+      <div className='Content'>
+        <div className='Content-container'>
+          <SSXComponent />
+        </div>
+      </div>
+    </div>
   )
 }
-
-export default Home;
