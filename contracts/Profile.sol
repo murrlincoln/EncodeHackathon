@@ -3,13 +3,11 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./Post.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract Profile is ERC721, Ownable {
-    struct Post {
-        uint256 id;
-        string contentCID;
-    }
+contract Profile is ERC721, ERC721URIStorage, Ownable {
+    using Counters for Counters.Counter;
     struct Connection {
         address profileAddress;
         bool approved;
@@ -17,14 +15,15 @@ contract Profile is ERC721, Ownable {
     string public profileName;
     string public profileDescription;
     string public profilePictureLink;
-    uint256 public postCount;
-    uint256 public connectionCount;
-
+    Counters.Counter private postCounter;
+    Counters.Counter private connectionCounter;
 
     address[] public owners;
     mapping(address => bool) public isOwner;
-    mapping(uint256 => Post) private tokenIdToPost;
 
+    address[] private connections;
+    mapping(address => bool) private isConnections;
+    
     constructor(
         string memory _name,
         string memory _description,
@@ -76,32 +75,62 @@ contract Profile is ERC721, Ownable {
         // Implementation to create NFT from the content CID
         // Mint NFT and assign it to this contract
         // Increment postCount
-        postCount++;
-        _safeMint(address(this), postCount);
-        tokenIdToPost[postCount] = Post(postCount, _contentCID);
+        uint256 tokenId = postCounter.current();
+        postCounter.increment();
+        _safeMint(address(this), tokenId);
+        _setTokenURI(tokenId, _contentCID);
     }
 
     function proposeConnect(address _otherProfile) external onlyOwners {
         require(!isProposedConnection(_otherProfile), "Connection already proposed");
         // Call externalProposeConnect on the other profile contract
         // Passing this contract's address for approval/denial
-        externalProposeConnect(_otherProfile);
+        
+        ExternalProfile(_otherProfile).externalProposeConnect(address(this));
     }
 
     function externalProposeConnect(address _proposingProfile) external onlyOwners {
         // Implementation to handle external connection proposal
-
+        // Add the proposing profile to the list of proposed connections
+        // Increment connectionCount
+        connectionCounter.increment();
+        isConnections[_proposingProfile] = true;
+        ExternalProfile(_proposingProfile).externalProposeConnect(address(this));
     }
 
     function listProposedConnections() external view returns (address[] memory) {
         // Return array of proposed connection addresses
         // Return empty array if no proposed connections
-        return proposedConnections[msg.sender];
+        return proposedConnections;
     }
 
     function isProposedConnection(address _profile) public view returns (bool) {
         // Check if the given address is in the list of proposed connections
         // Return true if proposed, false otherwise
-        return proposedConnections[msg.sender][_profile];
+        return isConnections[_profile];
     }
+    
+    // The following functions are overrides required by Solidity.
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(ERC721, ERC721URIStorage)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
+    }
+
+
+    function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
+        super._burn(tokenId);
+    }
+    
+    function tokenURI(uint256 tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory) {
+        return super.tokenURI(tokenId);
+    }
+}
+
+interface ExternalProfile {
+    function externalProposeConnect(address _proposingProfile) external;
 }
