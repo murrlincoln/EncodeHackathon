@@ -16,13 +16,13 @@ contract Profile is ERC721, ERC721URIStorage, Ownable {
     string public profileDescription;
     string public profilePictureLink;
     Counters.Counter private postCounter;
-    Counters.Counter private connectionCounter;
+    Counters.Counter private proposalCounter;
 
     address[] public owners;
     mapping(address => bool) public isOwner;
 
-    address[] private connections;
-    mapping(address => bool) private isConnections;
+    address[] private proposals;
+    mapping(address => bool) private proposedConnections;
     
     constructor(
         string memory _name,
@@ -85,16 +85,17 @@ contract Profile is ERC721, ERC721URIStorage, Ownable {
         require(!isProposedConnection(_otherProfile), "Connection already proposed");
         // Call externalProposeConnect on the other profile contract
         // Passing this contract's address for approval/denial
-        
-        ExternalProfile(_otherProfile).externalProposeConnect(address(this));
+        // Add the other profile to the list of proposed connections
+        // Increment proposalCount
+        externalProposeConnect(_proposingProfile);
     }
 
     function externalProposeConnect(address _proposingProfile) external onlyOwners {
         // Implementation to handle external connection proposal
         // Add the proposing profile to the list of proposed connections
         // Increment connectionCount
-        connectionCounter.increment();
-        isConnections[_proposingProfile] = true;
+        proposalCounter.increment();
+        proposedConnections[_proposingProfile] = true;
         ExternalProfile(_proposingProfile).externalProposeConnect(address(this));
     }
 
@@ -107,7 +108,7 @@ contract Profile is ERC721, ERC721URIStorage, Ownable {
     function isProposedConnection(address _profile) public view returns (bool) {
         // Check if the given address is in the list of proposed connections
         // Return true if proposed, false otherwise
-        return isConnections[_profile];
+        return proposedConnections[_profile];
     }
     
     // The following functions are overrides required by Solidity.
