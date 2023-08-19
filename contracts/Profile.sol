@@ -25,7 +25,7 @@ contract Profile is ERC721, ERC721URIStorage, Ownable {
     mapping(uint256 => string) public postToCID;
 
     address[] private proposals;
-    mapping(address => bool) private proposedConnections;
+    mapping(address => bool) private isProposedConnections;
     
     event OwnerAdded(address indexed _newOwner);
     event OwnerRemoved(address indexed _ownerToRemove);
@@ -138,22 +138,21 @@ contract Profile is ERC721, ERC721URIStorage, Ownable {
     function externalProposeConnect(address _proposingProfile) external onlyOwners {
         // Implementation to handle external connection proposal
         // Add the proposing profile to the list of proposed connections
-        // Increment connectionCount
-        proposalCounter.increment();
-        proposedConnections[_proposingProfile] = true;
+        // Increment connectionCounter
+        isProposedConnections[_proposingProfile] = true;
         ExternalProfile(_proposingProfile).externalProposeConnect(address(this));
     }
 
     function listProposedConnections() external view returns (address[] memory) {
         // Return array of proposed connection addresses
         // Return empty array if no proposed connections
-        return proposedConnections;
+        return proposals;
     }
 
     function isProposedConnection(address _profile) public view returns (bool) {
         // Check if the given address is in the list of proposed connections
         // Return true if proposed, false otherwise
-        return proposedConnections[_profile];
+        return isProposedConnections[_profile];
     }
     
     // The following functions are overrides required by Solidity.
