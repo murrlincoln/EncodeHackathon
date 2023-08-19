@@ -21,12 +21,22 @@ contract Profile is ERC721, ERC721URIStorage, Ownable {
     address[] public owners;
     mapping(address => bool) public isOwner;
 
-    address[] public posts;
-    mapping(uint256 => address) public postToCID;
+    uint256[] public posts;
+    mapping(uint256 => string) public postToCID;
 
     address[] private proposals;
     mapping(address => bool) private proposedConnections;
     
+    event OwnerAdded(address indexed _newOwner);
+    event OwnerRemoved(address indexed _ownerToRemove);
+    event ProfileUpdated(string _name, string _description, string _pictureLink);
+
+    event PostMinted(address indexed _owner, uint256 indexed _tokenId, string _contentCID);
+    event PostRemoved(address indexed _owner, uint256 indexed _tokenId);
+    
+    event ConnectionProposed(address indexed _proposingProfile, address indexed _proposedProfile);
+    event ConnectionApproved(address indexed _approvingProfile, address indexed _approvedProfile);
+
     constructor(
         string memory _name,
         string memory _description,
@@ -49,6 +59,7 @@ contract Profile is ERC721, ERC721URIStorage, Ownable {
         require(!isOwner[_newOwner], "Address is already an owner");
         owners.push(_newOwner);
         isOwner[_newOwner] = true;
+        emit OwnerAdded(_newOwner);
     }
 
     function removeOwner(address _ownerToRemove) external onlyOwners {
@@ -83,12 +94,17 @@ contract Profile is ERC721, ERC721URIStorage, Ownable {
         _setTokenURI(tokenId, _contentCID);
         posts.push(tokenId);
         postToCID[tokenId] = _contentCID;
+        emit PostMinted(address(this), tokenId, _contentCID);
     }
 
-    function listPosts() external view returns (mapping(uint256 => address) memory) {
-        // Return array of post CID addresses
+    function listPosts() external view returns (string[] memory) {
+        // Return array of post CIDs
         // Return empty array if no posts
-        return postToCID;
+        string[] memory postCIDs = new string[](posts.length);
+        for (uint256 i = 0; i < posts.length; i++) {
+            postCIDs[i] = postToCID[posts[i]];
+        }
+        return postCIDs;
     }
 
     function removePost(uint256 _tokenId) external onlyOwners {
@@ -105,15 +121,18 @@ contract Profile is ERC721, ERC721URIStorage, Ownable {
             }
         }
         delete postToCID[_tokenId];
+        emit PostRemoved(address(this), _tokenId);
     }
 
     function proposeConnect(address _otherProfile) external onlyOwners {
         require(!isProposedConnection(_otherProfile), "Connection already proposed");
-        // Call externalProposeConnect on the other profile contract
-        // Passing this contract's address for approval/denial
-        // Add the other profile to the list of proposed connections
-        // Increment proposalCount
-        externalProposeConnect(_proposingProfile);
+        // propose connection to other profile
+        // add other profile to proposedConnections
+        // increment proposalCounter
+        proposalCounter.increment();
+
+        emit ConnectionProposed(address(this), _otherProfile);
+
     }
 
     function externalProposeConnect(address _proposingProfile) external onlyOwners {
