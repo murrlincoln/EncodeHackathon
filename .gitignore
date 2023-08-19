@@ -5,6 +5,9 @@
 /.pnp
 .pnp.js
 
+# package.lock is auto-generated for npm, yarn, and pnpm
+package-lock.json
+
 # testing
 /coverage
 
