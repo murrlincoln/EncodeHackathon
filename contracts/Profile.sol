@@ -12,14 +12,17 @@ contract Profile is ERC721, ERC721URIStorage, Ownable {
         address profileAddress;
         bool approved;
     }
-    string public profileName;
-    string public profileDescription;
-    string public profilePictureLink;
+    string public profileName; // IPFS CID for profile name
+    string public profileDescription; // IPFS CID for profile description
+    string public profilePictureLink; // IPFS CID for profile picture
     Counters.Counter private postCounter;
     Counters.Counter private proposalCounter;
 
     address[] public owners;
     mapping(address => bool) public isOwner;
+
+    address[] public posts;
+    mapping(uint256 => address) public postToCID;
 
     address[] private proposals;
     mapping(address => bool) private proposedConnections;
@@ -71,14 +74,37 @@ contract Profile is ERC721, ERC721URIStorage, Ownable {
         profilePictureLink = _pictureLink;
     }
 
-    function post(string memory _contentCID) external onlyOwners {
+    function mintpostNFT(string memory _contentCID) external onlyOwners {
         // Implementation to create NFT from the content CID
         // Mint NFT and assign it to this contract
-        // Increment postCount
         uint256 tokenId = postCounter.current();
         postCounter.increment();
         _safeMint(address(this), tokenId);
         _setTokenURI(tokenId, _contentCID);
+        posts.push(tokenId);
+        postToCID[tokenId] = _contentCID;
+    }
+
+    function listPosts() external view returns (mapping(uint256 => address) memory) {
+        // Return array of post CID addresses
+        // Return empty array if no posts
+        return postToCID;
+    }
+
+    function removePost(uint256 _tokenId) external onlyOwners {
+        // Implementation to remove NFT from the content CID
+        // Burn NFT
+        // Remove post from posts array
+        // Remove post from postToCID mapping
+        _burn(_tokenId);
+        for (uint256 i = 0; i < posts.length; i++) {
+            if (posts[i] == _tokenId) {
+                posts[i] = posts[posts.length - 1];
+                posts.pop();
+                break;
+            }
+        }
+        delete postToCID[_tokenId];
     }
 
     function proposeConnect(address _otherProfile) external onlyOwners {
