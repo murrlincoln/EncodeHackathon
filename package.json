@@ -10,6 +10,7 @@
         "format": "prettier --write \"src/**/*.{ts,tsx}\""
     },
     "dependencies": {
+        "@radix-ui/react-avatar": "^1.0.3",
         "@radix-ui/react-navigation-menu": "^1.1.3",
         "@radix-ui/react-slot": "^1.0.2",
         "@spruceid/ssx": "^2.1.0",
