@@ -12,7 +12,7 @@ import {
 
 export default function NavBar() {
 	return (
-		<div className="w-full justify-center flex">
+		<div className="w-full justify-center flex my-8">
 
 			<NavigationMenu>
 				<NavigationMenuList>
