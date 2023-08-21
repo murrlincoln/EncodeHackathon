@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 
-contract Profile is ERC721, ERC721URIStorage, Ownable {
+contract Profile is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
     struct Connection {
         address profileAddress;
         bool approved;
@@ -170,6 +171,7 @@ contract Profile is ERC721, ERC721URIStorage, Ownable {
     function tokenURI(uint256 tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory) {
         return super.tokenURI(tokenId);
     }
+    
 }
 
 //https://ethereum.stackexchange.com/questions/88020/is-it-possible-for-multiple-smart-contracts-to-interact-together
