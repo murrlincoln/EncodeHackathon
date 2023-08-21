@@ -1,13 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.21;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract Profile is ERC721, ERC721URIStorage, Ownable {
-    using Counters for Counters.Counter;
     struct Connection {
         address profileAddress;
         bool approved;
@@ -15,8 +13,8 @@ contract Profile is ERC721, ERC721URIStorage, Ownable {
     string public profileName; // IPFS CID for profile name
     string public profileDescription; // IPFS CID for profile description
     string public profilePictureLink; // IPFS CID for profile picture
-    Counters.Counter private postCounter;
-    Counters.Counter private proposalCounter;
+    uint256 private postCounter;
+    uint256 private proposalCounter;
 
     address[] public owners;
     mapping(address => bool) public isOwner;
@@ -88,8 +86,8 @@ contract Profile is ERC721, ERC721URIStorage, Ownable {
     function mintpostNFT(string memory _contentCID) external onlyOwners {
         // Implementation to create NFT from the content CID
         // Mint NFT and assign it to this contract
-        uint256 tokenId = postCounter.current();
-        postCounter.increment();
+        uint256 tokenId = postCounter;
+        postCounter++;
         _safeMint(address(this), tokenId);
         _setTokenURI(tokenId, _contentCID);
         posts.push(tokenId);
@@ -125,22 +123,20 @@ contract Profile is ERC721, ERC721URIStorage, Ownable {
     }
 
     function proposeConnect(address _otherProfile) external onlyOwners {
+        //calls another profile smart contract’s externalProposeConnect, adding this address to the list of proposed connections that could be approved or denied by the other user. 
+        //First check that the user has not already proposed a connection, in which case it will accept.
         require(!isProposedConnection(_otherProfile), "Connection already proposed");
-        // propose connection to other profile
-        // add other profile to proposedConnections
-        // increment proposalCounter
-        proposalCounter.increment();
-
+        ExternalProfile(_otherProfile).externalProposeConnect(address(this));
         emit ConnectionProposed(address(this), _otherProfile);
 
     }
 
     function externalProposeConnect(address _proposingProfile) external onlyOwners {
-        // Implementation to handle external connection proposal
-        // Add the proposing profile to the list of proposed connections
-        // Increment connectionCounter
+        // called by other profiles to propose a connection.
+        proposalCounter++;
         isProposedConnections[_proposingProfile] = true;
-        ExternalProfile(_proposingProfile).externalProposeConnect(address(this));
+        proposals.push(_proposingProfile);
+        emit ConnectionProposed(_proposingProfile, address(this));
     }
 
     function listProposedConnections() external view returns (address[] memory) {
@@ -176,6 +172,7 @@ contract Profile is ERC721, ERC721URIStorage, Ownable {
     }
 }
 
+//https://ethereum.stackexchange.com/questions/88020/is-it-possible-for-multiple-smart-contracts-to-interact-together
 interface ExternalProfile {
     function externalProposeConnect(address _proposingProfile) external;
 }
