@@ -136,7 +136,6 @@ contract Profile is ERC721, ERC721URIStorage, ERC721Burnable, ERC721Holder, Owna
         require(!isProposedConnection(_otherProfile), "Connection already proposed");
         Profile(_otherProfile).externalProposeConnect(address(this));
         emit ConnectionProposed(address(this), _otherProfile);
-
     }
 
     function externalProposeConnect(address _proposingProfile) external {
@@ -178,5 +177,4 @@ contract Profile is ERC721, ERC721URIStorage, ERC721Burnable, ERC721Holder, Owna
     function tokenURI(uint256 tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory) {
         return super.tokenURI(tokenId);
     }
-    
 }
