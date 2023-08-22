@@ -5,8 +5,9 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
+import "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
 
-contract Profile is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
+contract Profile is ERC721, ERC721URIStorage, ERC721Burnable, ERC721Holder, Ownable {
     struct Connection {
         address profileAddress;
         bool approved;
@@ -94,6 +95,11 @@ contract Profile is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
         posts.push(tokenId);
         postToCID[tokenId] = _contentCID;
         emit PostMinted(address(this), tokenId, _contentCID);
+    }
+
+    // Function to receive an ERC721 token
+    function onERC721Received(address, address, uint256, bytes memory) public virtual override returns (bytes4) {
+        return this.onERC721Received.selector;
     }
 
     function listPosts() external view returns (string[] memory) {
