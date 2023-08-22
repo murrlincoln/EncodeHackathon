@@ -133,7 +133,7 @@ contract Profile is ERC721, ERC721URIStorage, ERC721Burnable, ERC721Holder, Owna
         //calls another profile smart contract’s externalProposeConnect, adding this address to the list of proposed connections that could be approved or denied by the other user. 
         //First check that the user has not already proposed a connection, in which case it will accept.
         require(!isProposedConnection(_otherProfile), "Connection already proposed");
-        ExternalProfile(_otherProfile).externalProposeConnect(address(this));
+        Profile(_otherProfile).externalProposeConnect(address(this));
         emit ConnectionProposed(address(this), _otherProfile);
 
     }
