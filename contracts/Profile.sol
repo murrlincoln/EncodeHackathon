@@ -26,7 +26,8 @@ contract Profile is ERC721, ERC721URIStorage, ERC721Burnable, ERC721Holder, Owna
 
     address[] private proposals;
     mapping(address => bool) private isProposedConnections;
-    
+   
+    event ShowProfile(address indexed _owner, string _name, string _description, string _pictureLink); 
     event OwnerAdded(address indexed _newOwner);
     event OwnerRemoved(address indexed _ownerToRemove);
     event ProfileUpdated(string _name, string _description, string _pictureLink);
@@ -129,7 +130,7 @@ contract Profile is ERC721, ERC721URIStorage, ERC721Burnable, ERC721Holder, Owna
         emit PostRemoved(address(this), _tokenId);
     }
 
-    function proposeConnect(address _otherProfile) external onlyOwners {
+    function proposeConnect(address _otherProfile) external {
         //calls another profile smart contract’s externalProposeConnect, adding this address to the list of proposed connections that could be approved or denied by the other user. 
         //First check that the user has not already proposed a connection, in which case it will accept.
         require(!isProposedConnection(_otherProfile), "Connection already proposed");
@@ -138,7 +139,7 @@ contract Profile is ERC721, ERC721URIStorage, ERC721Burnable, ERC721Holder, Owna
 
     }
 
-    function externalProposeConnect(address _proposingProfile) external onlyOwners {
+    function externalProposeConnect(address _proposingProfile) external {
         // called by other profiles to propose a connection.
         proposalCounter++;
         isProposedConnections[_proposingProfile] = true;
@@ -178,9 +179,4 @@ contract Profile is ERC721, ERC721URIStorage, ERC721Burnable, ERC721Holder, Owna
         return super.tokenURI(tokenId);
     }
     
-}
-
-//https://ethereum.stackexchange.com/questions/88020/is-it-possible-for-multiple-smart-contracts-to-interact-together
-interface ExternalProfile {
-    function externalProposeConnect(address _proposingProfile) external;
 }
