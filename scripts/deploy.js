@@ -7,12 +7,12 @@
 const hre = require("hardhat");
 
 async function main() {
-  const VarsityBadge = await hre.ethers.getContractFactory("VarsityBadge");
-  const varsityBadge = await VarsityBadge.deploy();
+  const Profile = await hre.ethers.getContractFactory("Profile");
+  const profile = await Profile.deploy();
 
-  await varsityBadge.deployed();
+  await profile.deployed();
 
-  console.log(`VarsityBadge deployed to ${varsityBadge.address}`);
+  console.log(`Profile deployed to ${profile.address}`);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
