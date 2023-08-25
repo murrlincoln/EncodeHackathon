@@ -8,11 +8,7 @@ import { use } from "chai";
 const varsityBadgeAddress = process.env.REACT_APP_VARSITY_BADGE_ADDRESS;
 const ownerV = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266".toLowerCase();
 
-const Mint = (ProfileAddress, title, ownerP, content, date) => {
-  const [mintAddress, setMintAddress] = useState(
-    "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
-  );
-  const [nftData, setNftData] = useState("");
+const Mint = (ProfileAddress, title, content, date) => {
   const [owner, setOwner] = useState("");
 
   useEffect(() => {
@@ -32,7 +28,7 @@ const Mint = (ProfileAddress, title, ownerP, content, date) => {
       },
       data: {
         "title": title,
-        "author": ownerP,
+        "author": owner,
         "content": content,
         "date": date
       },
@@ -85,8 +81,6 @@ const Mint = (ProfileAddress, title, ownerP, content, date) => {
       try {
         const data = await contract.safeMint(hash);
         console.log("data: ", data);
-        // setMintAddress("");
-        // setNftData("");
       } catch (err) {
         console.log("Error: ", err);
       }
@@ -95,9 +89,9 @@ const Mint = (ProfileAddress, title, ownerP, content, date) => {
 
   return (
     <div>
-      {owner === ownerV ? (
+      {owner === ownerP ? (
         <Box sx={{ "& button": { m: 1 } }}>
-          <TextField
+          {/* <TextField
             type="text"
             required
             placeholder="Address"
@@ -105,7 +99,7 @@ const Mint = (ProfileAddress, title, ownerP, content, date) => {
             onChange={(e) => {
               setMintAddress(e.target.value);
             }}
-          />
+          /> */}
           <Button variant="contained" onClick={upload}>
             Post
           </Button>
