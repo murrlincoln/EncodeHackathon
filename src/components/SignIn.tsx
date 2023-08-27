@@ -11,6 +11,7 @@ import { Button } from "./ui/button"
 import { SSX } from '@spruceid/ssx'
 import { useState } from 'react'
 import AccountInfo from './AccountInfo'
+import Deploy from './Deploy'
 
 
 export const SignIn = () => {
@@ -53,6 +54,7 @@ export const SignIn = () => {
 					) : (
 						<Button onClick={ssxHandler}>SIGN-IN WITH ETHEREUM</Button>
 					)}				</CardContent>
+				<CardFooter className="w-full flex justify-center"><Deploy /></CardFooter>
 				{/* <CardFooter>
 					<p>Card Footer</p>
 				</CardFooter> */}
