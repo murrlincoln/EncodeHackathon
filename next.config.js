@@ -9,4 +9,9 @@ module.exports = {
 	  })
 	  return config
 	},
+	env: {
+		API_URL: process.env.API_URL,
+		PRIVATE_KEY: process.env.PRIVATE_KEY,
+		ALCHEMY_API_KEY: process.env.ALCHEMY_API_KEY
+	  }
   }
