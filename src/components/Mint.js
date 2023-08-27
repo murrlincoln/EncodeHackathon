@@ -5,9 +5,6 @@ import { Button, Box, Typography, TextField } from "@mui/material";
 import axios from "axios";
 import { use } from "chai";
 
-const varsityBadgeAddress = process.env.REACT_APP_VARSITY_BADGE_ADDRESS;
-const ownerV = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266".toLowerCase();
-
 const Mint = (ProfileAddress, title, content, date) => {
   const [owner, setOwner] = useState("");
 
@@ -71,8 +68,8 @@ const Mint = (ProfileAddress, title, content, date) => {
   const mintNFT = async (ProfileAddress, hash) => {
     if (typeof window.ethereum !== "undefined") {
       await requestAccount();
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
       const contract = new ethers.Contract(
         ProfileAddress,
         Profile.abi,
