@@ -5,14 +5,19 @@ import { Button, Box, Typography, TextField } from "@mui/material";
 import axios from "axios";
 import { use } from "chai";
 
-const Mint = (ProfileAddress, title, content, date) => {
+const Mint = (ProfileAddress) => {
   const [owner, setOwner] = useState("");
+  const [ownerP, setOwnerP] = useState(""); // owner of the contract [Justin
+  // usetstate for storing and retrieving wallet details
+  const [content, setContent] = useState("");
+  const [title, setTitle] = useState("");
 
   useEffect(() => {
     fetchAccount();
   }, []);
 
   const upload = async () => {
+    
     var config = {
       method: "post",
       url: "https://api.pinata.cloud/pinning/pinJSONToIPFS", //https://pink-poised-cheetah-438.mypinata.cloud/ipfs/
@@ -27,7 +32,7 @@ const Mint = (ProfileAddress, title, content, date) => {
         "title": title,
         "author": owner,
         "content": content,
-        "date": date
+        "date": new Date().toLocaleString()
       },
     };
 
@@ -52,6 +57,7 @@ const Mint = (ProfileAddress, title, content, date) => {
         // Get the user's account address
         const accountAddress = accounts[0];
         setOwner(accountAddress);
+        setOwnerP(ProfileAddress);
         console.log(owner);
       } catch (error) {
         console.error("Error while fetching account address:", error);
@@ -68,15 +74,18 @@ const Mint = (ProfileAddress, title, content, date) => {
   const mintNFT = async (ProfileAddress, hash) => {
     if (typeof window.ethereum !== "undefined") {
       await requestAccount();
-      const provider = new ethers.BrowserProvider(window.ethereum);
+      // const provider = new ethers.BrowserProvider(window.ethereum);
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = await provider.getSigner();
+      console.log("ProfileAddress: ", ProfileAddress.ProfileAddress)
       const contract = new ethers.Contract(
-        ProfileAddress,
+        ProfileAddress.ProfileAddress,
         Profile.abi,
         signer
       );
       try {
-        const data = await contract.safeMint(hash);
+        const data = await contract.mintpostNFT(hash);
+        await data.wait();
         console.log("data: ", data);
       } catch (err) {
         console.log("Error: ", err);
@@ -86,24 +95,31 @@ const Mint = (ProfileAddress, title, content, date) => {
 
   return (
     <div>
-      {owner === ownerP ? (
+
         <Box sx={{ "& button": { m: 1 } }}>
-          {/* <TextField
+          <TextField
             type="text"
             required
-            placeholder="Address"
-            value={mintAddress}
+            placeholder="Title"
+            value={title}
             onChange={(e) => {
-              setMintAddress(e.target.value);
+              setTitle(e.target.value);
             }}
-          /> */}
-          <Button variant="contained" onClick={upload}>
+          />
+          <TextField
+            type="text"
+            required
+            placeholder="Share your thoughts..."
+            value={content}
+            onChange={(e) => {
+              setContent(e.target.value);
+            }}
+          />
+          <Button onClick={upload}>
             Post
           </Button>
         </Box>
-      ) : (
-        ""
-      )}
+
     </div>
   );
 };

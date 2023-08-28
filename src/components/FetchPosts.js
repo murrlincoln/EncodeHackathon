@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import { ethers } from "ethers";
 import Profile from "../artifacts/contracts/Profile.sol/Profile.json";
+import { Button, Box, Typography, TextField } from "@mui/material";
 import axios from "axios";
 
-const FetchPosts = () => {
+const FetchPosts = (ProfileAddress) => {
     const [posts, setPosts] = useState([]);
 
     const fetch = async (hash) => {
         var config = {
             method: "get",
-            url: "https://gateway.pinata.cloud/ipfs/{hash}"
+            url: "https://gateway.pinata.cloud/ipfs/" + hash,
+            withCredentials: false
         }
         const res = await axios(config);
         const resData = await res.data;
@@ -24,11 +26,11 @@ const FetchPosts = () => {
         if (typeof window.ethereum !== "undefined") {
             await requestAccount();
             const provider = new ethers.providers.Web3Provider(window.ethereum);
-            const signer = provider.getSigner();
+            const signer = await provider.getSigner();
             const contract = new ethers.Contract(
-            ProfileAddress,
-            Profile.abi,
-            signer
+                ProfileAddress.ProfileAddress,
+                Profile.abi,
+                signer
             );
             try {
                 const hashLists = await contract.listPosts();
@@ -36,8 +38,8 @@ const FetchPosts = () => {
                 const data = [];
                 for (var i = 0; i < hashLists.length; i++) {
                     const hash = hashLists[i];
-                    const data = await fetch(hash);
-                    data.push(data);
+                    const post = await fetch(hash);
+                    data.push(post);
                 }
                 console.log("data: ", data);
                 setPosts(data);
@@ -51,8 +53,7 @@ const FetchPosts = () => {
         
     return (
         <div>
-            <h1>Fetch Posts</h1>
-            <button onClick={fetchPosts}>Fetch</button>
+            <Button onClick={fetchPosts}>Fetch</Button>
             {posts.map((post, index) => (
                 <div key={index}>
                     <h2>{post.title}</h2>

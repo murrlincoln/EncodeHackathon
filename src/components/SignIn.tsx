@@ -54,7 +54,7 @@ export const SignIn = () => {
 					) : (
 						<Button onClick={ssxHandler}>SIGN-IN WITH ETHEREUM</Button>
 					)}				</CardContent>
-				<CardFooter className="w-full flex justify-center"><Deploy /></CardFooter>
+				<CardFooter className="w-full flex justify-center"></CardFooter>
 				{/* <CardFooter>
 					<p>Card Footer</p>
 				</CardFooter> */}

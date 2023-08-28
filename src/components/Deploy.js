@@ -2,16 +2,21 @@
 import React, { useState } from "react";
 import { ethers } from "ethers";
 import Profile from "../artifacts/contracts/Profile.sol/Profile.json";
+import { Button, Box, Typography, TextField } from "@mui/material";
 // const ethers = require("ethers");
 // const Profile = require("../artifacts/contracts/Profile.sol/Profile.json");
 const ABI =  Profile.abi;
 const bytecode = Profile.bytecode;
 const imageCID = "QmaGRzjSfmxxMFhWpyB6Q3Z9XCHMLH5NvCxDBvuzq9NfiB/wired-meme-nft-brian.webp"
 
-const Deploy = () => {
+// interface DeployProps {
+//     onDeploy: (address: string) => void;
+// }
+
+const Deploy = ({onDeploy}) => {
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
-    const [deployedAddress, setDeployedAddress] = useState("");
+    const [deployedAddress, setDeployedAddress] = useState('');
     
     async function requestAccount() {
         if(window.ethereum){
@@ -26,12 +31,11 @@ const Deploy = () => {
         }
     }
 
-    
-    
     const deployProfile = async () => {
         if (typeof window.ethereum !== "undefined") {
         await requestAccount();
-        const provider = new ethers.BrowserProvider(window.ethereum);
+        // const provider = new ethers.BrowserProvider(window.ethereum);
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = await provider.getSigner();
         const contract = new ethers
                             .ContractFactory(ABI, bytecode, signer);
@@ -41,9 +45,11 @@ const Deploy = () => {
         //     .ContractFactory(ABI, bytecode, Wallet);
         try {
             const deployedContract = await contract.deploy(name, description, imageCID);
-            // await deployedContract.deployed();
+            await deployedContract.deployed();
             console.log("Deployed Contract: ", deployedContract);
+            console.log("Deployed Contract Address: ", deployedContract.address);
             setDeployedAddress(deployedContract.address);
+            onDeploy(deployedContract.address);
         } catch (err) {
             console.log("Error: ", err);
         }
@@ -68,7 +74,7 @@ const Deploy = () => {
                 onChange={(e) => setDescription(e.target.value)}
                 />
             </label>
-        <button onClick={() => deployProfile()}>Deploy</button>
+        <Button onClick={deployProfile}>Deploy</Button>
         {deployedAddress ? <p>Contract Address : {deployedAddress}</p> : ""}
         </div>
     );
