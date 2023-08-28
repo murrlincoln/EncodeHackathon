@@ -30,9 +30,17 @@ export const Profile = () => {
 					<CardTitle icon={<Icon />}>Johnathon Doerman</CardTitle>
 					<CardDescription>Bio goes here</CardDescription>
 				</CardHeader>
+				{/* Show deploy elemnt if profileAddress is empty else show address  */}
+
 				<CardContent>
-					<p>Deploy a profile NFT</p>
-					<Deploy onDeploy={handleDeploy} />
+					{profileAddress ? (
+					<p>Contract Address: {profileAddress}</p>
+					) : (
+					<>
+						<p>Deploy a profile NFT</p>
+						<Deploy onDeploy={handleDeploy} />
+					</>
+        			)}
 				</CardContent>
 				<CardContent>
 					<p>Mint a post NFT</p>
